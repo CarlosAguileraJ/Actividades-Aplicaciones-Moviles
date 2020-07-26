@@ -59,6 +59,7 @@ class _InicioState extends State<Inicio> {
               Text("\n  \t \t Distancia al destino:  $_distanciakm"+" Km  ", style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.teal),),
 
             Text("\n\n"),
+            Text("\n  \t Ingresar coordenadas completas", style: TextStyle(fontSize: 10, fontStyle: FontStyle.italic, color: Colors.teal),),
              TextField(
                style: TextStyle(color: Colors.teal),
                autofocus: true,
@@ -67,7 +68,7 @@ class _InicioState extends State<Inicio> {
                 keyboardType: TextInputType.numberWithOptions(signed: true,decimal: true),
                 decoration:  InputDecoration(
                 border: OutlineInputBorder(),
-                  labelText: '  Ingresar Latitud',
+                  labelText: '  Ingresar Latitud de destino',
               ),
               onChanged: (String textinput) {
                 setState(() {
@@ -89,7 +90,7 @@ class _InicioState extends State<Inicio> {
               keyboardType: TextInputType.numberWithOptions(signed: true,decimal: true),
               decoration: new InputDecoration(
                   border: OutlineInputBorder(),
-                    labelText: '  Ingresar Longitud'
+                    labelText: '  Ingresar Longitud de destino'
               ),
               onChanged: (String textinput2) {
                 setState(() {
