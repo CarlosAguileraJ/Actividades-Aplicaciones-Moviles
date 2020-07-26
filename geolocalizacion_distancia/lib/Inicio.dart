@@ -1,4 +1,6 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'Distancia.dart';
 
@@ -21,7 +23,13 @@ class _InicioState extends State<Inicio> {
   // distancias en metro km
   double _distanciaEnMetros, _distanciakm;
   // asignamos longitud y latitud del destino
-  double _latitud= 20.6737883, _logitud=-103.3704326 ; // modificar aqui las coordenadas del destino
+  double _latitud , _logitud ; // modificar aqui las coordenadas del destino
+  String inputstr = "";
+  String inputstr2 = "";
+  //= 20.6737883,-103.3704326;
+
+  final myController = TextEditingController();
+  final myController2 = TextEditingController();
 
   //= 20.6737883,-103.3704326;
 
@@ -32,8 +40,9 @@ class _InicioState extends State<Inicio> {
         title: Text("Ubicación"),
       ),
       //backgroundColor: Colors.lightBlue,
-      body: Center(
-        child: Column(
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             //Si el objeto que contiene las coordenadas no es nulo, muestra la ubicación
@@ -50,33 +59,92 @@ class _InicioState extends State<Inicio> {
               Text("\n  \t \t Distancia al destino:  $_distanciakm"+" Km  ", style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.teal),),
 
             Text("\n\n"),
+             TextField(
+               style: TextStyle(color: Colors.teal),
+               autofocus: true,
+                cursorColor: Colors.teal,
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.numberWithOptions(signed: true,decimal: true),
+                decoration:  InputDecoration(
+                border: OutlineInputBorder(),
+                  labelText: '  Ingresar Latitud',
+              ),
+              onChanged: (String textinput) {
+                setState(() {
+                  inputstr = textinput;
+                  _latitud=double.tryParse(inputstr);
+                });
+              },
+              controller: myController,
+            ),
+            Text("\n"),
+
+
+
+            new TextField(
+              autofocus: true,
+              cursorColor: Colors.teal,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.teal),
+              keyboardType: TextInputType.numberWithOptions(signed: true,decimal: true),
+              decoration: new InputDecoration(
+                  border: OutlineInputBorder(),
+                    labelText: '  Ingresar Longitud'
+              ),
+              onChanged: (String textinput2) {
+                setState(() {
+                  inputstr2 = textinput2;
+                  _logitud= double.tryParse(inputstr2);
+                });
+              },
+              controller: myController2,
+            ),
+            Text("\n"),
 
             // boton obtener ubicacion
             RaisedButton(
+              textColor: Colors.white,
+              padding: const EdgeInsets.all(0.0),
               child: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: <Color>[
-                      Color(0xFF00796B),
-                      Color(0xFF009688),
-                      Color(0xFF80CBC4),
+                      Color(0xFF2962FF),
+                      Color(0xFF2979FF),
+                      Color(0xFF2196F3),
                     ],
                   ),
                 ),
                 padding: const EdgeInsets.all(21.7),
                 child: const Text(
-                  'Ubicación actual',
+                  'Ingresar Coordenadas',
                   style: TextStyle(fontSize: 20),
                 ),
               ),
               onPressed: () {
-                _getCurrentLocation();
+                return showDialog(
+
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      // Recupera el texto que el usuario ha digitado utilizando nuestro
+                      // TextEditingController
+                      content: Text("Coordenadas Ingresadas: "+"\n\nLatitud:"+ myController.text+"\nLongitud: "+myController2.text,
+                      style: TextStyle(fontSize: 20),
+                      ),
+                      contentTextStyle: TextStyle(color: Colors.teal),
+                    );
+                  },
+                );
               },
 
             ),
+            Text("\n\n"),
 
             // boton obtener destino
             RaisedButton(
+              textColor: Colors.white,
+              padding: const EdgeInsets.all(0.0),
               child: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -87,19 +155,25 @@ class _InicioState extends State<Inicio> {
                     ],
                   ),
                 ),
-                padding: const EdgeInsets.all(25.0),
+                padding: const EdgeInsets.all(14.0),
                 child: const Text(
-                    'Obtener destino',
+                    'Obtener ubicaciones',
                     style: TextStyle(fontSize: 20)
                 ),
               ),
               onPressed: () {
+                _convertir();
+                _getCurrentLocation();
                 _ubicacionDestino();
+
               },
             ),
+            Text("\n"),
 
             // boton obtener distancia
             RaisedButton(
+              textColor: Colors.white,
+              padding: const EdgeInsets.all(0.0),
               child: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -110,7 +184,7 @@ class _InicioState extends State<Inicio> {
                     ],
                   ),
                 ),
-                padding: const EdgeInsets.all(17.0),
+                padding: const EdgeInsets.all(27.0),
                 child: const Text(
                     'Obtener distancia',
                     style: TextStyle(fontSize: 20)
@@ -119,13 +193,16 @@ class _InicioState extends State<Inicio> {
               onPressed: () {
                 _getCurrentLocation();
                 _obtenerDistancia();
-                _obtenerDistancia();
+                _ubicacionDestino();
                 _distanciakm = _distanciaEnMetros/1000;
               },
             ),
+            Text("\n"),
 
             // boton mostrar mapa
             RaisedButton(
+              textColor: Colors.white,
+              padding: const EdgeInsets.all(0.0),
               child: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -136,20 +213,25 @@ class _InicioState extends State<Inicio> {
                     ],
                   ),
                 ),
-                padding: const EdgeInsets.all(42.0),
+                padding: const EdgeInsets.all(43.5),
                 child: const Text(
-                    'Abrir mapas',
+                    'Mostrar mapa',
                     style: TextStyle(fontSize: 20)
                 ),
               ),
               onPressed: () {
+                _getCurrentLocation();
                 //Abro pantalla pasando como parámetro el objeto Position
                 Navigator.push(context, MaterialPageRoute(builder: (context) => Distancia(posicion: _currentPosition,)));
               },
             ),
+
+            Text("\n"),
+
           ],
         ),
       ),
+    )
     );
   }
 
@@ -182,6 +264,7 @@ class _InicioState extends State<Inicio> {
     } catch (e) {
       print(e);
     }
+    _ubicacionDestino();
   }
 
   _obtenerDistancia() async {
@@ -191,6 +274,7 @@ class _InicioState extends State<Inicio> {
   }
 
   _ubicacionDestino() async {
+
     try {
       List<Placemark> d = await geolocator.placemarkFromCoordinates(_latitud, _logitud);
       Placemark place = d[0];
@@ -202,5 +286,18 @@ class _InicioState extends State<Inicio> {
       print(e);
     }
   }
+  _convertir()async{
+    try {
+      String x = myController.toString();
+      String y = myController2.toString();
+      setState(() {
+        _logitud = double.parse(y);
+        _latitud = double.parse(x);
+      });
+    }catch(e){
+      print(e);
+    }
+  }
 }
+
 
